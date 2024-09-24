@@ -100,6 +100,28 @@ def print_quadruples(quadruples):
 threeaddresscode_input = iter(lambda: input("Enter three-address code (end with 'end'): "), 'end')
 quadruples = generate_quadruples(list(threeaddresscode_input))
 print_quadruples(quadruples)
+
+
+
+
+def Quadruples():
+    results = [["result", "left", "operator", "right"]]
+    operators = set("+-*/%")
+
+    for i in range(int(input("Number of input: "))):
+        left, right = map(str.strip, input("Entry: ").split("="))
+        for op in operators:
+            if op in right:
+                results.append([left, right.split(op)[0].strip(), op, right.split(op)[1].strip()])
+                break
+        else:
+            results.append([left, " ", "=", right])
+
+    for result in results:
+        print(result)
+
+Quadruples()
+            
     </code></pre>
 
     <h2>4. Time and Loop Comparison</h2>
