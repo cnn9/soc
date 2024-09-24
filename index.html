@@ -1,21 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Code Examples</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            overflow: auto;
+        }
+        code {
+            font-family: Consolas, 'Courier New', monospace;
+            color: #d63384;
+        }
+    </style>
+</head>
+<body>
 
-1.token
+    <h1>Python Code Examples</h1>
 
-# Import RegexpTokenizer from nltk for tokenizing based on regular expressions
+    <h2>1. Tokenizer Example</h2>
+    <pre><code># Import RegexpTokenizer from nltk for tokenizing based on regular expressions
 from nltk.tokenize import RegexpTokenizer 
+
 # Create a tokenizer that splits text at whitespace characters
 tk = RegexpTokenizer('\s+', gaps=True)
+
 # Define the input string
 input_str = "I love to study Compiler code in Python"
-#Tokenize the input string using the tokenizer
+
+# Tokenize the input string using the tokenizer
 tokens = tk.tokenize(input_str)
+
 # Print the list of tokens (words)
 print(tokens)
+    </code></pre>
 
-
-2.
-
-import re
+    <h2>2. Infix to Postfix and Regex Match Example</h2>
+    <pre><code>import re
 
 def infix_to_postfix(regex):
     if not regex:
@@ -44,11 +72,10 @@ match_result = "ACCEPTED" if re.fullmatch(regex, string) else "REJECTED"
 # Output results
 print("Postfix form:", postfix)
 print("Match:", match_result)
+    </code></pre>
 
-
-3.quadruple
-
-def generate_quadruples(threeaddresscode):
+    <h2>3. Quadruple Generation Example</h2>
+    <pre><code>def generate_quadruples(threeaddresscode):
     quadruples = []
     for line in threeaddresscode:
         if '=' in line:
@@ -73,36 +100,31 @@ def print_quadruples(quadruples):
 threeaddresscode_input = iter(lambda: input("Enter three-address code (end with 'end'): "), 'end')
 quadruples = generate_quadruples(list(threeaddresscode_input))
 print_quadruples(quadruples)
+    </code></pre>
 
-
-
-
-4.Time/loop
-
-import time
+    <h2>4. Time and Loop Example</h2>
+    <pre><code>import time
 n = int(input("enter number"))
 
-t1=time.time()
+t1 = time.time()
 
-for i in range (1, n+1):
-    print(i,end=" ") 
+for i in range(1, n + 1):
+    print(i, end=" ") 
 
-t2 =time.time()
+t2 = time.time()
 
+t3 = time.time()
 
-t3 =time.time()
-
-for i in range (1, n+1):
-    print(i,end=" ") 
-    if (i % 5== 0):
+for i in range(1, n + 1):
+    print(i, end=" ") 
+    if i % 5 == 0:
         print()
 
-t4 =time.time()
+t4 = time.time()
 
-print(f" time1 {t2-t1:.6f} sec")
-print(f" time2 {t4-t3} sec")
+print(f"Time1: {t2 - t1:.6f} sec")
+print(f"Time2: {t4 - t3} sec")
+    </code></pre>
 
-
-
-
-
+</body>
+</html>
