@@ -3,29 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Python Code Display</title>
+    <title>Machine Learning Programs</title>
     <style>
         body {
             font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        h3 {
+            color: #2c3e50;
+            margin-top: 20px;
         }
         pre {
             background-color: #f4f4f4;
-            border: 1px solid #ddd;
-            padding: 10px;
+            padding: 15px;
+            border-radius: 5px;
             overflow-x: auto;
-            white-space: pre-wrap; /* Wrap long lines */
         }
         code {
-            font-family: "Courier New", Courier, monospace;
-            color: #d14;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
+    <h1>Machine Learning and Deep Learning Programs</h1>
 
-    ###Aim : Write a program for object detection from the image/video.
-
-
+    <h3>Aim: Write a program for object detection from the image/video</h3>
+    <pre><code>
 import cv2
 import matplotlib.pyplot as plt
 
@@ -61,8 +66,10 @@ if len(ClassIndex) > 0:
 plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
 plt.axis("off")
 plt.show()
-###Aim : Implement Convolutional Neural Network for Digit Recognition on the MNIST Dataset.
+    </code></pre>
 
+    <h3>Aim: Implement Convolutional Neural Network for Digit Recognition on the MNIST Dataset</h3>
+    <pre><code>
 import numpy as np
 import keras
 from keras.datasets import mnist
@@ -103,8 +110,10 @@ print("Predicted:", np.argmax(y_pred[sample_index]), "True:", np.argmax(y_test[s
 plt.imshow(x_test[sample_index].reshape(28, 28), cmap='gray')
 plt.axis('off')
 plt.show()
-##Aim : Write a program to implement regularization to prevent the model from overfitting
+    </code></pre>
 
+    <h3>Aim: Write a program to implement regularization to prevent the model from overfitting</h3>
+    <pre><code>
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -128,9 +137,10 @@ print("Lasso Test RMSE:", round(np.sqrt(metrics.mean_squared_error(y_test, lasso
 ridge = Ridge().fit(X_train, y_train)
 print("Ridge Train RMSE:", round(np.sqrt(metrics.mean_squared_error(y_train, ridge.predict(X_train))), 5))
 print("Ridge Test RMSE:", round(np.sqrt(metrics.mean_squared_error(y_test, ridge.predict(X_test))), 5))
-###Implement Feed-forward Neural Network and train the network with different optimizers and compare the results.
+    </code></pre>
 
-
+    <h3>Aim: Implement Feed-forward Neural Network and train the network with different optimizers and compare the results</h3>
+    <pre><code>
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -194,8 +204,10 @@ print(conf_matrix)
 
 accuracy = accuracy_score(Y_test, Y_pred)
 print(f"Accuracy Score: {accuracy:.4f}")
-### Aim : Implement Convolutional Neural Network for Cat and Dog classification.
+    </code></pre>
 
+    <h3>Aim: Implement Convolutional Neural Network for Cat and Dog classification</h3>
+    <pre><code>
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import ImageDataGenerator, load_img, img_to_array
 import numpy as np
@@ -236,8 +248,10 @@ def predict_image(img_path):
 # Test prediction
 test_image_path = 'C:/Users/ompan/Downloads/small_dataset/single_prediction/cat_or_dog_1.jpg'
 print(f"Prediction: {predict_image(test_image_path)}")
-### Aim : Implement deep learning for recognizing classes for datasets like CIFAR-10 images for previously unseen images and assign them to one of the 10 classes.
+    </code></pre>
 
+    <h3>Aim: Implement deep learning for recognizing classes for datasets like CIFAR-10 images for previously unseen images and assign them to one of the 10 classes</h3>
+    <pre><code>
 import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
@@ -335,8 +349,10 @@ p = n.reshape(1, 32, 32, 3)
 predicted_label = labels[model.predict(p).argmax()]
 original_label = labels[y_test[image_number]]
 print(f"Original Label: {original_label}, Predicted Label: {predicted_label}")
-### Aim : Implement deep learning for the prediction of the autoencoder from the test data(e.g. MNIST data set)
+    </code></pre>
 
+    <h3>Aim: Implement deep learning for the prediction of the autoencoder from the test data (e.g., MNIST dataset)</h3>
+    <pre><code>
 import numpy as np
 import matplotlib.pyplot as plt
 from tensorflow.keras.layers import Input, Dense
@@ -427,8 +443,10 @@ for i in range(n):
     plt.axis('off')
 
 plt.show()
-##  Aim :Write a program to implement a simple form of a recurrent neural network.
+    </code></pre>
 
+    <h3>Aim: Write a program to implement a simple form of a recurrent neural network</h3>
+    <pre><code>
 import numpy as np
 from tensorflow.keras.datasets import imdb
 from tensorflow.keras.preprocessing.sequence import pad_sequences
@@ -496,6 +514,7 @@ for model_name in ["Simple_RNN", "GRU_Model", "LSTM_Model"]:
     
     score = model.evaluate(x_test, y_test, verbose=0)
     print(f"{model_name} Test Score: Loss = {score[0]:.4f}, Accuracy = {score[1]:.4f}\n")
+    </code></pre>
 
 </body>
 </html>
