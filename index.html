@@ -1,146 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Machine Learning Programs</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            line-height: 1.6;
-        }
-        h3 {
-            color: #2c3e50;
-            margin-top: 20px;
-        }
-        pre {
-            background-color: #f4f4f4;
-            padding: 15px;
-            border-radius: 5px;
-            overflow-x: auto;
-        }
-        code {
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 14px;
-        }
-    </style>
-</head>
-<body>
-    <h1>Machine Learning and Deep Learning Programs</h1>
-
-    <h3>Aim: Write a program for object detection from the image/video</h3>
-    <pre><code>
-import cv2
-import matplotlib.pyplot as plt
-
-# Paths to model files (update these based on your file locations)
-config_file = "ssd_mobilenet_v3_large_coco_2020_01_14.pbtxt"
-frozen_model = "frozen_inference_graph.pb"
-labels_file = "labels.txt"
-image_path = "3.png"  # Replace with your image path
-
-# Load the pre-trained deep learning model
-model = cv2.dnn_DetectionModel(frozen_model, config_file)
-model.setInputSize(320, 320)
-model.setInputScale(1.0 / 127.5)
-model.setInputMean((127.5, 127.5, 127.5))
-model.setInputSwapRB(True)
-
-# Load class labels
-with open(labels_file, "rt") as f:
-    classLabels = f.read().strip().split("\n")
-
-# Read and process the image
-img = cv2.imread(image_path)
-ClassIndex, Confidence, bbox = model.detect(img, confThreshold=0.5)
-
-# Draw bounding boxes and labels
-if len(ClassIndex) > 0:
-    for ClassInd, conf, box in zip(ClassIndex.flatten(), Confidence.flatten(), bbox):
-        cv2.rectangle(img, box, (255, 0, 0), 2)
-        label_text = f"{classLabels[ClassInd - 1]}: {conf:.2f}"
-        cv2.putText(img, label_text, (box[0], box[1] - 10), cv2.FONT_HERSHEY_PLAIN, 1, (0, 255, 0), 2)
-
-# Display the image
-plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
-plt.axis("off")
-plt.show()
-    </code></pre>
-
-    <h3>Aim: Implement Convolutional Neural Network for Digit Recognition on the MNIST Dataset</h3>
-    <pre><code>
-import numpy as np
-import keras
-from keras.datasets import mnist
-from keras.models import Model
-from keras.layers import Input, Conv2D, MaxPooling2D, Dropout, Flatten, Dense
-from keras.utils import to_categorical
-import matplotlib.pyplot as plt
-
-# Load and preprocess data
-(x_train, y_train), (x_test, y_test) = mnist.load_data()
-img_rows, img_cols = 28, 28
-x_train = x_train.reshape(-1, img_rows, img_cols, 1).astype('float32') / 255
-x_test = x_test.reshape(-1, img_rows, img_cols, 1).astype('float32') / 255
-y_train = to_categorical(y_train, 10)
-y_test = to_categorical(y_test, 10)
-
-# Build model
-inpx = Input((img_rows, img_cols, 1))
-x = Conv2D(32, (3, 3), activation='relu')(inpx)
-x = Conv2D(64, (3, 3), activation='relu')(x)
-x = MaxPooling2D((2, 2))(x)
-x = Dropout(0.25)(x)
-x = Flatten()(x)
-x = Dense(256, activation='sigmoid')(x)
-out = Dense(10, activation='softmax')(x)
-model = Model(inpx, out)
-model.compile(optimizer='adadelta', loss='categorical_crossentropy', metrics=['accuracy'])
-
-# Train and evaluate
-model.fit(x_train, y_train, epochs=12, batch_size=500, validation_data=(x_test, y_test))
-score = model.evaluate(x_test, y_test, verbose=0)
-print("Test loss:", score[0], "Test accuracy:", score[1])
-
-# Predict and visualize
-y_pred = model.predict(x_test)
-sample_index = 5
-print("Predicted:", np.argmax(y_pred[sample_index]), "True:", np.argmax(y_test[sample_index]))
-plt.imshow(x_test[sample_index].reshape(28, 28), cmap='gray')
-plt.axis('off')
-plt.show()
-    </code></pre>
-
-    <h3>Aim: Write a program to implement regularization to prevent the model from overfitting</h3>
-    <pre><code>
-import numpy as np
-import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import Lasso, Ridge
-from sklearn import metrics
-
-# Load dataset
-dataset = pd.read_csv('Salary_Data.csv')
-X = dataset.iloc[:, :-1].values  # Features
-y = dataset.iloc[:, -1].values  # Target
-
-# Split data into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=1/3, random_state=0)
-
-# Train Lasso model
-lasso = Lasso().fit(X_train, y_train)
-print("Lasso Train RMSE:", round(np.sqrt(metrics.mean_squared_error(y_train, lasso.predict(X_train))), 5))
-print("Lasso Test RMSE:", round(np.sqrt(metrics.mean_squared_error(y_test, lasso.predict(X_test))), 5))
-
-# Train Ridge model
-ridge = Ridge().fit(X_train, y_train)
-print("Ridge Train RMSE:", round(np.sqrt(metrics.mean_squared_error(y_train, ridge.predict(X_train))), 5))
-print("Ridge Test RMSE:", round(np.sqrt(metrics.mean_squared_error(y_test, ridge.predict(X_test))), 5))
-    </code></pre>
-
-    <h3>Aim: Implement Feed-forward Neural Network and train the network with different optimizers and compare the results</h3>
-    <pre><code>
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -148,373 +5,145 @@ from sklearn.preprocessing import LabelEncoder, OneHotEncoder, StandardScaler
 from sklearn.compose import ColumnTransformer
 from sklearn.metrics import confusion_matrix, accuracy_score
 import tensorflow as tf
-
-# Check TensorFlow version
-print(f"TensorFlow Version: {tf.__version__}")
+import matplotlib.pyplot as plt
 
 # Load dataset
 dataset = pd.read_csv('DL_PRAC/Churn_Modelling.csv')
+X = dataset.iloc[:, 3:-1].values
+Y = dataset.iloc[:, -1].values
 
-# Feature selection
-X = dataset.iloc[:, 3:-1].values  # Independent variables
-Y = dataset.iloc[:, -1].values   # Dependent variable
-
-# Encode categorical data (Gender)
+# Encode categorical data
 label_encoder = LabelEncoder()
 X[:, 2] = label_encoder.fit_transform(X[:, 2])
-
-# One-hot encode categorical data (Geography)
 column_transformer = ColumnTransformer(
     transformers=[('encoder', OneHotEncoder(), [1])], remainder='passthrough'
 )
 X = np.array(column_transformer.fit_transform(X))
 
-# Split dataset into training and testing sets
+# Split and scale data
 X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=0)
-
-# Feature scaling
 scaler = StandardScaler()
 X_train = scaler.fit_transform(X_train)
 X_test = scaler.transform(X_test)
 
-# Build the Artificial Neural Network (ANN)
-ann = tf.keras.models.Sequential([
-    tf.keras.layers.Dense(units=6, activation='relu'),  # Hidden layer 1
-    tf.keras.layers.Dense(units=6, activation='relu'),  # Hidden layer 2
-    tf.keras.layers.Dense(units=1, activation='sigmoid')  # Output layer
-])
+# Define optimizers to compare
+optimizers = {
+    'SGD': tf.keras.optimizers.SGD(learning_rate=0.01),
+    'Adam': tf.keras.optimizers.Adam(learning_rate=0.001),
+    'RMSprop': tf.keras.optimizers.RMSprop(learning_rate=0.001),
+    'Adagrad': tf.keras.optimizers.Adagrad(learning_rate=0.01)
+}
 
-# Compile the ANN
-ann.compile(optimizer='adadelta', loss='binary_crossentropy', metrics=['accuracy'])
+# Store results
+results = {}
+histories = {}
 
-# Train the ANN
-ann.fit(X_train, Y_train, batch_size=32, epochs=100)
+# Build and train model with different optimizers
+for opt_name, optimizer in optimizers.items():
+    print(f"\nTraining with {opt_name} optimizer...")
+    
+    # Build ANN
+    ann = tf.keras.models.Sequential([
+        tf.keras.layers.Dense(units=6, activation='relu'),
+        tf.keras.layers.Dense(units=6, activation='relu'),
+        tf.keras.layers.Dense(units=1, activation='sigmoid')
+    ])
+    
+    # Compile and train
+    ann.compile(optimizer=optimizer, loss='binary_crossentropy', metrics=['accuracy'])
+    history = ann.fit(X_train, Y_train, batch_size=32, epochs=100, verbose=0, validation_split=0.2)
+    
+    # Evaluate
+    Y_pred = ann.predict(X_test)
+    Y_pred = (Y_pred > 0.5)
+    accuracy = accuracy_score(Y_test, Y_pred)
+    conf_matrix = confusion_matrix(Y_test, Y_pred)
+    
+    results[opt_name] = {
+        'accuracy': accuracy,
+        'confusion_matrix': conf_matrix
+    }
+    histories[opt_name] = history.history
 
-# Predict test set results
-Y_pred = ann.predict(X_test)
-Y_pred = (Y_pred > 0.5)  # Convert probabilities to binary predictions
+# Print results
+for opt_name, result in results.items():
+    print(f"\n{opt_name} Results:")
+    print(f"Accuracy: {result['accuracy']:.4f}")
+    print("Confusion Matrix:")
+    print(result['confusion_matrix'])
 
-# Display predicted vs actual values
-print(np.concatenate((Y_pred.reshape(len(Y_pred), 1), Y_test.reshape(len(Y_test), 1)), axis=1))
-
-# Evaluate model performance
-conf_matrix = confusion_matrix(Y_test, Y_pred)
-print("Confusion Matrix:")
-print(conf_matrix)
-
-accuracy = accuracy_score(Y_test, Y_pred)
-print(f"Accuracy Score: {accuracy:.4f}")
-    </code></pre>
-
-    <h3>Aim: Implement Convolutional Neural Network for Cat and Dog classification</h3>
-    <pre><code>
-import tensorflow as tf
-from tensorflow.keras.preprocessing.image import ImageDataGenerator, load_img, img_to_array
-import numpy as np
-
-# Dataset paths
-train_dir = 'C:/Users/ompan/Downloads/small_dataset/training_set'
-test_dir = 'C:/Users/ompan/Downloads/small_dataset/test_set'
-
-# Data preprocessing
-train_gen = ImageDataGenerator(rescale=1./255, shear_range=0.2, zoom_range=0.2, horizontal_flip=True)
-test_gen = ImageDataGenerator(rescale=1./255)
-
-train_data = train_gen.flow_from_directory(train_dir, target_size=(64, 64), batch_size=32, class_mode='binary')
-test_data = test_gen.flow_from_directory(test_dir, target_size=(64, 64), batch_size=32, class_mode='binary')
-
-# Build CNN model
-cnn = tf.keras.Sequential([
-    tf.keras.layers.Conv2D(32, (3, 3), activation='relu', input_shape=(64, 64, 3)),
-    tf.keras.layers.MaxPool2D((2, 2)),
-    tf.keras.layers.Conv2D(32, (3, 3), activation='relu'),
-    tf.keras.layers.MaxPool2D((2, 2)),
-    tf.keras.layers.Flatten(),
-    tf.keras.layers.Dense(128, activation='relu'),
-    tf.keras.layers.Dense(1, activation='sigmoid')
-])
-
-# Compile and train
-cnn.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
-cnn.fit(train_data, validation_data=test_data, epochs=25)
-
-# Predict on a single image
-def predict_image(img_path):
-    img = load_img(img_path, target_size=(64, 64))
-    img = img_to_array(img) / 255.0
-    img = np.expand_dims(img, axis=0)
-    return 'dog' if cnn.predict(img)[0][0] > 0.5 else 'cat'
-
-# Test prediction
-test_image_path = 'C:/Users/ompan/Downloads/small_dataset/single_prediction/cat_or_dog_1.jpg'
-print(f"Prediction: {predict_image(test_image_path)}")
-    </code></pre>
-
-    <h3>Aim: Implement deep learning for recognizing classes for datasets like CIFAR-10 images for previously unseen images and assign them to one of the 10 classes</h3>
-    <pre><code>
-import tensorflow as tf
-import numpy as np
-import matplotlib.pyplot as plt
-from tensorflow.keras.layers import Input, Conv2D, Dense, Flatten, Dropout, BatchNormalization, MaxPooling2D
-from tensorflow.keras.models import Model
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
-
-# Check TensorFlow version
-print(f"TensorFlow Version: {tf.__version__}")
-
-# Load CIFAR-10 dataset
-(x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar10.load_data()
-print(f"Train Shape: {x_train.shape}, Test Shape: {x_test.shape}")
-
-# Normalize pixel values to [0, 1]
-x_train, x_test = x_train / 255.0, x_test / 255.0
-
-# Flatten labels
-y_train, y_test = y_train.flatten(), y_test.flatten()
-
-# Visualize data by plotting images
-fig, ax = plt.subplots(5, 5, figsize=(5, 5))
-for i in range(5):
-    for j in range(5):
-        ax[i][j].imshow(x_train[i * 5 + j], aspect='auto')
-        ax[i][j].axis('off')  # Turn off axis for clarity
-plt.show()
-
-# Build CNN model using Functional API
-K = len(set(y_train))  # Number of classes
-print(f"Number of Classes: {K}")
-
-i = Input(shape=x_train[0].shape)
-x = Conv2D(32, (3, 3), activation='relu', padding='same')(i)
-x = BatchNormalization()(x)
-x = Conv2D(32, (3, 3), activation='relu', padding='same')(x)
-x = BatchNormalization()(x)
-x = MaxPooling2D((2, 2))(x)
-
-x = Conv2D(64, (3, 3), activation='relu', padding='same')(x)
-x = BatchNormalization()(x)
-x = Conv2D(64, (3, 3), activation='relu', padding='same')(x)
-x = BatchNormalization()(x)
-x = MaxPooling2D((2, 2))(x)
-
-x = Conv2D(128, (3, 3), activation='relu', padding='same')(x)
-x = BatchNormalization()(x)
-x = Conv2D(128, (3, 3), activation='relu', padding='same')(x)
-x = BatchNormalization()(x)
-x = MaxPooling2D((2, 2))(x)
-
-x = Flatten()(x)
-x = Dropout(0.2)(x)
-x = Dense(1024, activation='relu')(x)
-x = Dropout(0.2)(x)
-x = Dense(K, activation='softmax')(x)
-
-model = Model(i, x)
-model.summary()
-
-# Compile the model
-model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-
-# Data augmentation
-batch_size = 32
-data_generator = ImageDataGenerator(width_shift_range=0.1, height_shift_range=0.1, horizontal_flip=True)
-train_generator = data_generator.flow(x_train, y_train, batch_size=batch_size)
-steps_per_epoch = x_train.shape[0] // batch_size
-
-# Train the model
-history = model.fit(
-    train_generator,
-    validation_data=(x_test, y_test),
-    steps_per_epoch=steps_per_epoch,
-    epochs=2
-)
-
-# Plot accuracy per iteration
-plt.plot(history.history['accuracy'], label='Training Accuracy', color='red')
-plt.plot(history.history['val_accuracy'], label='Validation Accuracy', color='green')
+# Plot training comparison
+plt.figure(figsize=(12, 6))
+for opt_name, history in histories.items():
+    plt.plot(history['accuracy'], label=f'{opt_name} Train')
+    plt.plot(history['val_accuracy'], linestyle='--', label=f'{opt_name} Val')
+plt.title('Optimizer Comparison - Accuracy')
+plt.xlabel('Epoch')
+plt.ylabel('Accuracy')
 plt.legend()
-plt.title('Accuracy Over Epochs')
-plt.show()
+plt.grid(True)
+plt.savefig('optimizer_comparison.png')
+plt.close()
 
-# Test prediction on a single image
-labels = "airplane automobile bird cat deer dog frog horse ship truck".split()
-image_number = 0
-plt.imshow(x_test[image_number])
-plt.axis('off')  # Turn off axis for clarity
-plt.show()
-
-# Predict and display result
-n = np.array(x_test[image_number])
-p = n.reshape(1, 32, 32, 3)
-predicted_label = labels[model.predict(p).argmax()]
-original_label = labels[y_test[image_number]]
-print(f"Original Label: {original_label}, Predicted Label: {predicted_label}")
-    </code></pre>
-
-    <h3>Aim: Implement deep learning for the prediction of the autoencoder from the test data (e.g., MNIST dataset)</h3>
-    <pre><code>
-import numpy as np
-import matplotlib.pyplot as plt
-from tensorflow.keras.layers import Input, Dense
-from tensorflow.keras.models import Model
-from tensorflow.keras.datasets import mnist
-
-# Load MNIST dataset
-(X_train, Y_train), (X_test, Y_test) = mnist.load_data()
-
-# Display dataset information
-print(f"X_train shape: {X_train.shape}, X_test shape: {X_test.shape}")
-print(f"Y_train shape: {Y_train.shape}, Y_test shape: {Y_test.shape}")
-print(f"Unique Y_train values: {np.unique(Y_train)}")
-print(f"Unique Y_test values: {np.unique(Y_test)}")
-
-# Distribution of classes in the dataset
-unique_train, counts_train = np.unique(Y_train, return_counts=True)
-unique_test, counts_test = np.unique(Y_test, return_counts=True)
-print(f"Y_train distribution: {dict(zip(unique_train, counts_train))}")
-print(f"Y_test distribution: {dict(zip(unique_test, counts_test))}")
-
-# Plot histogram of class distributions
-fig, axs = plt.subplots(1, 2, figsize=(15, 5))
-axs[0].hist(Y_train, bins=10, ec='black')
-axs[0].set_title("Y_train Class Distribution")
-axs[0].set_xlabel("Classes")
-axs[0].set_ylabel("Number of Occurrences")
-axs[1].hist(Y_test, bins=10, ec='black')
-axs[1].set_title("Y_test Class Distribution")
-axs[1].set_xlabel("Classes")
-axs[1].set_ylabel("Number of Occurrences")
-plt.tight_layout()
-plt.show()
-
-# Normalize and reshape data
-X_train = X_train.astype('float32') / 255.0
-X_test = X_test.astype('float32') / 255.0
-X_train = X_train.reshape((len(X_train), np.prod(X_train.shape[1:])))
-X_test = X_test.reshape((len(X_test), np.prod(X_test.shape[1:])))
-
-print(f"Reshaped X_train shape: {X_train.shape}")
-print(f"Reshaped X_test shape: {X_test.shape}")
-
-# Build Autoencoder model
-input_layer = Input(shape=(784,))
-encoded = Dense(32, activation='relu')(input_layer)
-decoded = Dense(784, activation='sigmoid')(encoded)
-autoencoder = Model(input_layer, decoded)
-
-# Summarize the model
-autoencoder.summary()
-
-# Compile and train the model
-autoencoder.compile(optimizer='adam', loss='binary_crossentropy')
-history = autoencoder.fit(
-    X_train, X_train,
-    epochs=50,
-    batch_size=256,
-    shuffle=True,
-    validation_data=(X_test, X_test)
-)
-
-# Plot training and validation loss
-def plot_loss(history):
-    plt.plot(history.history['loss'], label='Train Loss')
-    plt.plot(history.history['val_loss'], label='Validation Loss')
-    plt.title('Model Loss')
-    plt.xlabel('Epoch')
-    plt.ylabel('Loss')
-    plt.legend()
-    plt.show()
-
-plot_loss(history)
-
-# Visualize original and reconstructed images
-n = 5  # Number of examples to display
-plt.figure(figsize=(20, 4))
-for i in range(n):
-    # Original image
-    ax = plt.subplot(2, n, i + 1)
-    plt.imshow(X_test[i].reshape(28, 28), cmap='gray')
-    plt.axis('off')
-
-    # Reconstructed image
-    ax = plt.subplot(2, n, i + 1 + n)
-    decoded_img = autoencoder.predict(X_test[i].reshape(1, 784))
-    plt.imshow(decoded_img.reshape(28, 28), cmap='gray')
-    plt.axis('off')
-
-plt.show()
-    </code></pre>
-
-    <h3>Aim: Write a program to implement a simple form of a recurrent neural network</h3>
-    <pre><code>
-import numpy as np
-from tensorflow.keras.datasets import imdb
-from tensorflow.keras.preprocessing.sequence import pad_sequences
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Embedding, SimpleRNN, GRU, LSTM, Dense
-
-# Parameters
-vocab_size = 5000
-max_words = 400
-embedding_dim = 32
-
-# Load IMDB dataset
-(x_train, y_train), (x_test, y_test) = imdb.load_data(num_words=vocab_size)
-
-# Explore dataset
-print("First review (encoded):", x_train[0])
-
-# Decode one review to text
-word_index = imdb.get_word_index()
-reverse_word_index = {i: word for word, i in word_index.items()}
-decoded_review = " ".join([reverse_word_index.get(i - 3, "?") for i in x_train[0]])
-print("\nDecoded first review:", decoded_review)
-
-# Review length statistics
-all_reviews = x_train + x_test
-print("\nMax review length:", len(max(all_reviews, key=len)))
-print("Min review length:", len(min(all_reviews, key=len)))
-
-# Pad sequences
-x_train = pad_sequences(x_train, maxlen=max_words)
-x_test = pad_sequences(x_test, maxlen=max_words)
-
-# Split into training and validation sets
-x_valid, y_valid = x_train[:64], y_train[:64]
-x_train_, y_train_ = x_train[64:], y_train[64:]
-
-# Define a function to create models
-def build_model(model_type):
-    model = Sequential(name=model_type)
-    model.add(Embedding(vocab_size, embedding_dim, input_length=max_words))
+# Generate HTML output
+html_content = """
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Neural Network Optimizer Comparison</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 50%;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Neural Network Optimizer Comparison</h1>
     
-    if model_type == "Simple_RNN":
-        model.add(SimpleRNN(128, activation='tanh'))
-    elif model_type == "GRU_Model":
-        model.add(GRU(128, activation='tanh'))
-    elif model_type == "LSTM_Model":
-        model.add(LSTM(128, activation='relu'))
-    
-    model.add(Dense(1, activation='sigmoid'))
-    return model
+    <h2>Performance Results</h2>
+    <table>
+        <tr>
+            <th>Optimizer</th>
+            <th>Accuracy</th>
+            <th>TP</th>
+            <th>FP</th>
+            <th>FN</th>
+            <th>TN</th>
+        </tr>
+"""
 
-# Train and evaluate models
-for model_name in ["Simple_RNN", "GRU_Model", "LSTM_Model"]:
-    print(f"\nTraining {model_name}...")
-    model = build_model(model_name)
-    model.compile(loss="binary_crossentropy", optimizer='adam', metrics=['accuracy'])
-    
-    history = model.fit(
-        x_train_, y_train_,
-        batch_size=64,
-        epochs=5,
-        verbose=1,
-        validation_data=(x_valid, y_valid)
-    )
-    
-    score = model.evaluate(x_test, y_test, verbose=0)
-    print(f"{model_name} Test Score: Loss = {score[0]:.4f}, Accuracy = {score[1]:.4f}\n")
-    </code></pre>
+for opt_name, result in results.items():
+    cm = result['confusion_matrix']
+    html_content += f"""
+        <tr>
+            <td>{opt_name}</td>
+            <td>{result['accuracy']:.4f}</td>
+            <td>{cm[0][0]}</td>
+            <td>{cm[0][1]}</td>
+            <td>{cm[1][0]}</td>
+            <td>{cm[1][1]}</td>
+        </tr>
+    """
 
+html_content += """
+    </table>
+    
+    <h2>Training Progress</h2>
+    <img src="optimizer_comparison.png" alt="Optimizer Comparison Graph">
+    
 </body>
 </html>
