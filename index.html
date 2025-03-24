@@ -1,310 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Deep Learning Implementations</title>
-  <style>
-    body {
-      font-family: 'Courier New', monospace;
-      background-color: #f4f4f4;
-      padding: 20px;
-    }
-    pre {
-      background: #272822;
-      color: #f8f8f2;
-      padding: 20px;
-      overflow-x: auto;
-      border-radius: 5px;
-      margin-bottom: 40px;
-    }
-    h3 {
-      color: #222;
-      font-family: sans-serif;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Database Commands</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; }
+        pre { background-color: #f4f4f4; padding: 10px; }
+        .info { color: #555; }
+    </style>
 </head>
 <body>
+    <h1>MongoDB Commands</h1>
+    <p class="info">// Connect to your database</p>
+    <pre>use myDatabase</pre>
 
-  <h3>### Implement Feed-forward Neural Network and train the network with different optimizers and compare the results.</h3>
-  <pre><code>
-import numpy as np
-import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder, OneHotEncoder, StandardScaler
-from sklearn.compose import ColumnTransformer
-from sklearn.metrics import confusion_matrix, accuracy_score
-import tensorflow as tf
+    <p class="info">// Insert sample documents into the 'products' collection</p>
+    <pre>db.products.insertMany([
+  { name: "Laptop", description: "Portable computer", price: 1200, tags: ["electronics", "computers", "portable"] },
+  { name: "Smartphone", description: "Handheld device", price: 700, tags: ["electronics", "mobile", "handheld"] },
+  { name: "Tablet", description: "Touchscreen device", price: 500, tags: ["electronics", "mobile", "touch"] }
+]);</pre>
 
-print(f"TensorFlow Version: {tf.__version__}")
+    <p class="info">// Create a text index on the 'description' field</p>
+    <pre>db.products.createIndex({ description: "text" });</pre>
 
-dataset = pd.read_csv('DL_PRAC/Churn_Modelling.csv')
-X = dataset.iloc[:, 3:-1].values
-Y = dataset.iloc[:, -1].values
+    <p class="info">// Create a compound index on 'name' and 'price'</p>
+    <pre>db.products.createIndex({ name: 1, price: -1 });</pre>
 
-label_encoder = LabelEncoder()
-X[:, 2] = label_encoder.fit_transform(X[:, 2])
+    <p class="info">// List all indexes on the 'products' collection</p>
+    <pre>console.log("Indexes on 'products':", db.products.getIndexes());</pre>
 
-column_transformer = ColumnTransformer(
-    transformers=[('encoder', OneHotEncoder(), [1])], remainder='passthrough'
-)
-X = np.array(column_transformer.fit_transform(X))
+    <p class="info">// Perform a text search using the text index</p>
+    <pre>var textQueryStats = db.products.find({ $text: { $search: "computer" } }).explain("executionStats");
+console.log("Text Query Execution Stats:", textQueryStats);</pre>
 
-X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=0)
+    <p class="info">// Use the compound index to find a product by name and sort by price</p>
+    <pre>var compoundQueryStats = db.products.find({ name: "Laptop" }).sort({ price: -1 }).explain("executionStats");
+console.log("Compound Query Execution Stats:", compoundQueryStats);</pre>
 
-scaler = StandardScaler()
-X_train = scaler.fit_transform(X_train)
-X_test = scaler.transform(X_test)
+    <h1>Redis Commands</h1>
+    <p class="info">// Connect to Redis</p>
+    <pre>r = redis.Redis(host='localhost', port=6379, db=0)</pre>
 
-ann = tf.keras.models.Sequential([
-    tf.keras.layers.Dense(units=6, activation='relu'),
-    tf.keras.layers.Dense(units=6, activation='relu'),
-    tf.keras.layers.Dense(units=1, activation='sigmoid')
-])
+    <p class="info">// Store data in Redis</p>
+    <pre>r.set('name', 'Alice')
+r.setex('temp_data', 300, 'This is temporary data')</pre>
 
-ann.compile(optimizer='adadelta', loss='binary_crossentropy', metrics=['accuracy'])
-ann.fit(X_train, Y_train, batch_size=32, epochs=100)
+    <p class="info">// Retrieve data from Redis</p>
+    <pre>name = r.get('name')
+if name:
+    print("Retrieved name:", name.decode())
 
-Y_pred = ann.predict(X_test)
-Y_pred = (Y_pred > 0.5)
+temp_data = r.get('temp_data')
+if temp_data:
+    print("Retrieved temporary data:", temp_data.decode())</pre>
 
-print(np.concatenate((Y_pred.reshape(len(Y_pred), 1), Y_test.reshape(len(Y_test), 1)), axis=1))
-conf_matrix = confusion_matrix(Y_test, Y_pred)
-print("Confusion Matrix:")
-print(conf_matrix)
-
-accuracy = accuracy_score(Y_test, Y_pred)
-print(f"Accuracy Score: {accuracy:.4f}")
-  </code></pre>
-
-  <h3>### Implement Convolutional Neural Network for Cat and Dog classification.</h3>
-  <pre><code>
-import tensorflow as tf
-from tensorflow.keras.preprocessing.image import ImageDataGenerator, load_img, img_to_array
-import numpy as np
-
-train_dir = 'C:/Users/ompan/Downloads/small_dataset/training_set'
-test_dir = 'C:/Users/ompan/Downloads/small_dataset/test_set'
-
-train_gen = ImageDataGenerator(rescale=1./255, shear_range=0.2, zoom_range=0.2, horizontal_flip=True)
-test_gen = ImageDataGenerator(rescale=1./255)
-
-train_data = train_gen.flow_from_directory(train_dir, target_size=(64, 64), batch_size=32, class_mode='binary')
-test_data = test_gen.flow_from_directory(test_dir, target_size=(64, 64), batch_size=32, class_mode='binary')
-
-cnn = tf.keras.Sequential([
-    tf.keras.layers.Conv2D(32, (3, 3), activation='relu', input_shape=(64, 64, 3)),
-    tf.keras.layers.MaxPool2D((2, 2)),
-    tf.keras.layers.Conv2D(32, (3, 3), activation='relu'),
-    tf.keras.layers.MaxPool2D((2, 2)),
-    tf.keras.layers.Flatten(),
-    tf.keras.layers.Dense(128, activation='relu'),
-    tf.keras.layers.Dense(1, activation='sigmoid')
-])
-
-cnn.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
-cnn.fit(train_data, validation_data=test_data, epochs=25)
-
-def predict_image(img_path):
-    img = load_img(img_path, target_size=(64, 64))
-    img = img_to_array(img) / 255.0
-    img = np.expand_dims(img, axis=0)
-    return 'dog' if cnn.predict(img)[0][0] > 0.5 else 'cat'
-
-test_image_path = 'C:/Users/ompan/Downloads/small_dataset/single_prediction/cat_or_dog_1.jpg'
-print(f"Prediction: {predict_image(test_image_path)}")
-  </code></pre>
-
-  <h3>### Implement deep learning for classifying CIFAR-10 dataset.</h3>
-  <pre><code>
-import tensorflow as tf
-import numpy as np
-import matplotlib.pyplot as plt
-from tensorflow.keras.layers import Input, Conv2D, Dense, Flatten, Dropout, BatchNormalization, MaxPooling2D
-from tensorflow.keras.models import Model
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
-
-print(f"TensorFlow Version: {tf.__version__}")
-
-(x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar10.load_data()
-x_train, x_test = x_train / 255.0, x_test / 255.0
-y_train, y_test = y_train.flatten(), y_test.flatten()
-
-fig, ax = plt.subplots(5, 5, figsize=(5, 5))
-for i in range(5):
-    for j in range(5):
-        ax[i][j].imshow(x_train[i * 5 + j], aspect='auto')
-        ax[i][j].axis('off')
-plt.show()
-
-K = len(set(y_train))
-
-i = Input(shape=x_train[0].shape)
-x = Conv2D(32, (3, 3), activation='relu', padding='same')(i)
-x = BatchNormalization()(x)
-x = Conv2D(32, (3, 3), activation='relu', padding='same')(x)
-x = BatchNormalization()(x)
-x = MaxPooling2D((2, 2))(x)
-
-x = Conv2D(64, (3, 3), activation='relu', padding='same')(x)
-x = BatchNormalization()(x)
-x = Conv2D(64, (3, 3), activation='relu', padding='same')(x)
-x = BatchNormalization()(x)
-x = MaxPooling2D((2, 2))(x)
-
-x = Conv2D(128, (3, 3), activation='relu', padding='same')(x)
-x = BatchNormalization()(x)
-x = Conv2D(128, (3, 3), activation='relu', padding='same')(x)
-x = BatchNormalization()(x)
-x = MaxPooling2D((2, 2))(x)
-
-x = Flatten()(x)
-x = Dropout(0.2)(x)
-x = Dense(1024, activation='relu')(x)
-x = Dropout(0.2)(x)
-x = Dense(K, activation='softmax')(x)
-
-model = Model(i, x)
-model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-
-batch_size = 32
-data_generator = ImageDataGenerator(width_shift_range=0.1, height_shift_range=0.1, horizontal_flip=True)
-train_generator = data_generator.flow(x_train, y_train, batch_size=batch_size)
-steps_per_epoch = x_train.shape[0] // batch_size
-
-history = model.fit(
-    train_generator,
-    validation_data=(x_test, y_test),
-    steps_per_epoch=steps_per_epoch,
-    epochs=2
-)
-
-plt.plot(history.history['accuracy'], label='Training Accuracy', color='red')
-plt.plot(history.history['val_accuracy'], label='Validation Accuracy', color='green')
-plt.legend()
-plt.title('Accuracy Over Epochs')
-plt.show()
-
-labels = "airplane automobile bird cat deer dog frog horse ship truck".split()
-image_number = 0
-plt.imshow(x_test[image_number])
-plt.axis('off')
-plt.show()
-
-n = np.array(x_test[image_number])
-p = n.reshape(1, 32, 32, 3)
-predicted_label = labels[model.predict(p).argmax()]
-original_label = labels[y_test[image_number]]
-print(f"Original Label: {original_label}, Predicted Label: {predicted_label}")
-  </code></pre>
-
-  <h3>### Autoencoder using MNIST dataset</h3>
-  <pre><code>
-import numpy as np
-import matplotlib.pyplot as plt
-from tensorflow.keras.layers import Input, Dense
-from tensorflow.keras.models import Model
-from tensorflow.keras.datasets import mnist
-
-(X_train, Y_train), (X_test, Y_test) = mnist.load_data()
-X_train = X_train.astype('float32') / 255.0
-X_test = X_test.astype('float32') / 255.0
-X_train = X_train.reshape((len(X_train), np.prod(X_train.shape[1:])))
-X_test = X_test.reshape((len(X_test), np.prod(X_test.shape[1:])))
-
-input_layer = Input(shape=(784,))
-encoded = Dense(32, activation='relu')(input_layer)
-decoded = Dense(784, activation='sigmoid')(encoded)
-autoencoder = Model(input_layer, decoded)
-
-autoencoder.compile(optimizer='adam', loss='binary_crossentropy')
-history = autoencoder.fit(
-    X_train, X_train,
-    epochs=50,
-    batch_size=256,
-    shuffle=True,
-    validation_data=(X_test, X_test)
-)
-
-def plot_loss(history):
-    plt.plot(history.history['loss'], label='Train Loss')
-    plt.plot(history.history['val_loss'], label='Validation Loss')
-    plt.title('Model Loss')
-    plt.xlabel('Epoch')
-    plt.ylabel('Loss')
-    plt.legend()
-    plt.show()
-
-plot_loss(history)
-
-n = 5
-plt.figure(figsize=(20, 4))
-for i in range(n):
-    ax = plt.subplot(2, n, i + 1)
-    plt.imshow(X_test[i].reshape(28, 28), cmap='gray')
-    plt.axis('off')
-
-    ax = plt.subplot(2, n, i + 1 + n)
-    decoded_img = autoencoder.predict(X_test[i].reshape(1, 784))
-    plt.imshow(decoded_img.reshape(28, 28), cmap='gray')
-    plt.axis('off')
-plt.show()
-  </code></pre>
-
-  <h3>### Recurrent Neural Networks - Simple RNN, GRU, LSTM on IMDB</h3>
-  <pre><code>
-import numpy as np
-from tensorflow.keras.datasets import imdb
-from tensorflow.keras.preprocessing.sequence import pad_sequences
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Embedding, SimpleRNN, GRU, LSTM, Dense
-
-vocab_size = 5000
-max_words = 400
-embedding_dim = 32
-
-(x_train, y_train), (x_test, y_test) = imdb.load_data(num_words=vocab_size)
-
-word_index = imdb.get_word_index()
-reverse_word_index = {i: word for word, i in word_index.items()}
-decoded_review = " ".join([reverse_word_index.get(i - 3, "?") for i in x_train[0]])
-print("\nDecoded first review:", decoded_review)
-
-x_train = pad_sequences(x_train, maxlen=max_words)
-x_test = pad_sequences(x_test, maxlen=max_words)
-
-x_valid, y_valid = x_train[:64], y_train[:64]
-x_train_, y_train_ = x_train[64:], y_train[64:]
-
-def build_model(model_type):
-    model = Sequential(name=model_type)
-    model.add(Embedding(vocab_size, embedding_dim, input_length=max_words))
-
-    if model_type == "Simple_RNN":
-        model.add(SimpleRNN(128, activation='tanh'))
-    elif model_type == "GRU_Model":
-        model.add(GRU(128, activation='tanh'))
-    elif model_type == "LSTM_Model":
-        model.add(LSTM(128, activation='relu'))
-
-    model.add(Dense(1, activation='sigmoid'))
-    return model
-
-for model_name in ["Simple_RNN", "GRU_Model", "LSTM_Model"]:
-    print(f"\nTraining {model_name}...")
-    model = build_model(model_name)
-    model.compile(loss="binary_crossentropy", optimizer='adam', metrics=['accuracy'])
-
-    history = model.fit(
-        x_train_, y_train_,
-        batch_size=64,
-        epochs=5,
-        verbose=1,
-        validation_data=(x_valid, y_valid)
-    )
-
-    score = model.evaluate(x_test, y_test, verbose=0)
-    print(f"{model_name} Test Score: Loss = {score[0]:.4f}, Accuracy = {score[1]:.4f}\n")
-  </code></pre>
-
+    <p class="info">// Redis CLI command to get the stored name</p>
+    <pre>cmd get name</pre>
 </body>
 </html>
